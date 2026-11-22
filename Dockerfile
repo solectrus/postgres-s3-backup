@@ -1,4 +1,8 @@
-ARG POSTGRES_VERSION
+# check=skip=SecretsUsedInArgOrEnv
+# The ENV lines below only set empty defaults for credentials, because the
+# scripts run with "set -u". The real values come in at runtime.
+
+ARG POSTGRES_VERSION=19
 FROM postgres:${POSTGRES_VERSION}-alpine
 ARG TARGETARCH
 
