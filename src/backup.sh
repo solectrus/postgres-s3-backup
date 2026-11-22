@@ -40,12 +40,15 @@ if [ -n "$BACKUP_KEEP_DAYS" ]; then
   date_from_remove=$(date -d "@$(($(date +%s) - sec))" +%Y-%m-%d)
   backups_query="Contents[?LastModified<='${date_from_remove} 00:00:00'].{Key: Key}"
 
+  prefix_re=$(regex_escape "$S3_PREFIX")
+
   echo "Removing old backups from $S3_BUCKET..."
   aws $aws_args s3api list-objects \
     --bucket "${S3_BUCKET}" \
-    --prefix "${S3_PREFIX}" \
+    --prefix "${S3_PREFIX}/${POSTGRES_DATABASE}_" \
     --query "${backups_query}" \
     --output text \
-    | xargs -n1 -t -I 'KEY' aws $aws_args s3 rm s3://"${S3_BUCKET}"/'KEY'
+    | { grep -E "^${prefix_re}/${backup_name_re}\.dump(\.gpg)?\$" || [ $? -eq 1 ]; } \
+    | xargs -r -n1 -t -I 'KEY' aws $aws_args s3 rm s3://"${S3_BUCKET}"/'KEY'
   echo "Removal complete."
 fi
