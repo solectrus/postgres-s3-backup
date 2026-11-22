@@ -1,3 +1,6 @@
+# Sourced by backup.sh and restore.sh, which use the variables set here
+# shellcheck disable=SC2034
+
 if [ -z "$S3_BUCKET" ]; then
   echo "You need to set the S3_BUCKET environment variable."
   exit 1

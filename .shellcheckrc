@@ -1,0 +1,7 @@
+# Scripts run in the BusyBox ash of the Alpine image (pipefail, source)
+shell=busybox
+# Follow "source ./env.sh" relative to the script
+external-sources=true
+source-path=SCRIPTDIR
+# $aws_args, $conn_opts and $PGDUMP_EXTRA_OPTS split into several arguments on purpose
+disable=SC2086
