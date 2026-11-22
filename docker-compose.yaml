@@ -3,7 +3,7 @@
 
 services:
   postgres:
-    image: postgres:14
+    image: postgres:19-alpine
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
@@ -12,7 +12,7 @@ services:
     build:
       context: .
       args:
-        POSTGRES_VERSION: '18'
+        POSTGRES_VERSION: '19'
     environment:
       SCHEDULE: '@weekly' # optional
       BACKUP_KEEP_DAYS: 7 # optional

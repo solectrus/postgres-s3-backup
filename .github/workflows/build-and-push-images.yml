@@ -19,11 +19,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - { postgres: 14 }
           - { postgres: 15 }
           - { postgres: 16 }
           - { postgres: 17 }
           - { postgres: 18 }
+          - { postgres: 19 }
 
     steps:
       - name: Checkout repository
