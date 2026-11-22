@@ -18,12 +18,19 @@ if [ $# -eq 1 ]; then
   key_suffix="${POSTGRES_DATABASE}_${timestamp}${file_type}"
 else
   echo "Finding latest backup..."
+  file_type_re=$(regex_escape "$file_type")
   key_suffix=$(
-    aws $aws_args s3 ls "${s3_uri_base}/${POSTGRES_DATABASE}" \
+    aws $aws_args s3 ls "${s3_uri_base}/${POSTGRES_DATABASE}_" \
+      | awk '{ print $4 }' \
+      | grep -E "^${backup_name_re}${file_type_re}\$" \
       | sort \
-      | tail -n 1 \
-      | awk '{ print $4 }'
+      | tail -n 1
   )
+
+  if [ -z "$key_suffix" ]; then
+    echo "No backup found for database $POSTGRES_DATABASE."
+    exit 1
+  fi
 fi
 
 echo "Fetching backup from S3..."

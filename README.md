@@ -49,9 +49,6 @@ services:
 docker exec <container name> sh restore.sh
 ```
 
-> [!NOTE]
-> If your bucket has more than a 1000 files, the latest may not be restored -- only one S3 `ls` command is used
-
 ### ... from specific backup
 
 ```sh

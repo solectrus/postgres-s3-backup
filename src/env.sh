@@ -47,3 +47,13 @@ if [ -n "$S3_SECRET_ACCESS_KEY" ]; then
 fi
 export AWS_DEFAULT_REGION=$S3_REGION
 export PGPASSWORD=$POSTGRES_PASSWORD
+
+# Escape regex metacharacters (ERE), so "my$db" matches literally
+regex_escape() {
+  printf '%s' "$1" | sed 's/[][\.*^$+?(){}|/]/\\&/g'
+}
+
+# Regex for the file name that backup.sh writes for this database, without
+# the file type. The timestamp keeps "foo" apart from "foo_test".
+database_re=$(regex_escape "$POSTGRES_DATABASE")
+backup_name_re="${database_re}_[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"
