@@ -13,9 +13,9 @@ fi
 
 if [ -z "$POSTGRES_HOST" ]; then
   # https://docs.docker.com/network/links/#environment-variables
-  if [ -n "$POSTGRES_PORT_5432_TCP_ADDR" ]; then
+  if [ -n "${POSTGRES_PORT_5432_TCP_ADDR:-}" ]; then
     POSTGRES_HOST=$POSTGRES_PORT_5432_TCP_ADDR
-    POSTGRES_PORT=$POSTGRES_PORT_5432_TCP_PORT
+    POSTGRES_PORT=${POSTGRES_PORT_5432_TCP_PORT:-5432}
   else
     echo "You need to set the POSTGRES_HOST environment variable."
     exit 1
