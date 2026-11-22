@@ -34,11 +34,14 @@ else
 fi
 
 echo "Fetching backup from S3..."
-aws $aws_args s3 cp "${s3_uri_base}/${key_suffix}" "db${file_type}"
+aws $aws_args s3 cp "${s3_uri_base}/${key_suffix}" "db${file_type}" || exit 1
 
 if [ -n "$PASSPHRASE" ]; then
   echo "Decrypting backup..."
-  gpg --decrypt --batch --passphrase "$PASSPHRASE" db.dump.gpg > db.dump
+  if ! gpg --decrypt --batch --passphrase "$PASSPHRASE" db.dump.gpg > db.dump; then
+    rm -f db.dump db.dump.gpg
+    exit 1
+  fi
   rm db.dump.gpg
 fi
 
@@ -46,6 +49,12 @@ conn_opts="-h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DA
 
 echo "Restoring from backup..."
 pg_restore $conn_opts --clean --if-exists db.dump
+status=$?
 rm db.dump
+
+if [ "$status" -ne 0 ]; then
+  echo "Restore finished with errors (pg_restore exit code $status)."
+  exit "$status"
+fi
 
 echo "Restore complete."
